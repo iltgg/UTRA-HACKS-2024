@@ -16,10 +16,21 @@ int analogR = A0;
 int digitalL = 9;
 int analogL = A1;
 
+// LED
+int led_red = 10;
+int led_green = 11;
+
+//Button
+int button = 1;
+int buttonState = 0;
+
 double distance;
 
 int ena_max = 255;
 int enb_max = 210;
+
+int state = 0;
+bool wait = false;
 
 void setup() {
   // Left wheel
@@ -41,6 +52,11 @@ void setup() {
   pinMode(analogR, INPUT);
   pinMode(digitalL, INPUT);
   pinMode(analogL, INPUT);
+
+  pinMode(led_red, OUTPUT);
+  pinMode(led_green, OUTPUT);
+
+  pinMode(button, INPUT);
 
   Serial.begin(9600);
 }
@@ -164,12 +180,49 @@ void mazeCode(){
   }
 }
 
+void LedSelection(){
+  if(state == 0)
+  {
+    digitalWrite(led_red, LOW);
+    digitalWrite(led_green, LOW);
+  }
+  else if(state == 1)
+  {
+    digitalWrite(led_red, HIGH);
+    digitalWrite(led_green, LOW);
+  }
+  else if(state == 2)
+  {
+    digitalWrite(led_red, LOW);
+    digitalWrite(led_green, HIGH);
+  }
+}
+
+void StateSelection()
+{
+  buttonState = digitalRead(button);
+  if (wait == false)
+  {
+    if (buttonState == HIGH) {
+      wait = true;
+      state++;
+      Serial.print("State Change:" + state);
+      if (state > 2)
+      {
+        state = 0;
+      }
+    } 
+  }
+  if (buttonState == LOW){
+      wait = false;
+  }
+}
+
 void loop() {
   //delay(1000);
   //mazeCode();
-  delay(5000);
-  rotateLeft(300);
-  delay(5000);
-  rotateRight(300);
+  Serial.println(state);
+  StateSelection();
+  LedSelection();
 }
 
