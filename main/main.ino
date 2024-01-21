@@ -115,13 +115,13 @@ void ultrasonic() {
   duration = pulseIn(echoPin, HIGH);
   distance = (duration/2) / 29.1;
 
-  if (distance >= 500 || distance <= 0){
-    Serial.println("Out of range");
-  }
-  else {
+  //if (distance >= 500 || distance <= 0){
+  //  Serial.println("Out of range");
+  //}
+  //else {
     Serial.print(distance);
     Serial.println(" cm");
-  }
+  //}
 }
 
 void leftIR() {
@@ -137,16 +137,16 @@ void rightIR() {
 }
 
 void mazeCode(){
-  rotateRight(100);
+  rotateRight(300);
   delay(1000);
   ultrasonic();
   if (distance < 10){
-    rotateLeft(100);
+    rotateLeft(300);
     delay(1000);
     ultrasonic();
     if(distance < 10){
-      rotateLeft(220);
-      goStraight(100);
+      rotateLeft(300);
+      goStraight(200);
     }
     else{
       goStraight(100);
@@ -156,11 +156,11 @@ void mazeCode(){
     goStraight(100);
   }
   else{
-    rotateLeft(100);
+    rotateLeft(300);
     delay(1000);
-    goStraight(100);
+    goStraight(500);
     delay(1000);
-    rotateRight(220);
+    rotateRight(300);
   }
 }
 
