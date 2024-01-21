@@ -135,41 +135,33 @@ int leftIRblack() {
   return analogRead(analogL);
 }
 
-void randomWalk(int time) {
+void randomWalk() {
   // Default state: moving forward
-  
-  int lr = random(0, 2);
-  int smallDelay = 5;
-  for (int i = 0; i < time; i+=smallDelay) {
-    ultrasonic();
-    if (distance < 20) {
-      break;
-    }
-    goStraight(smallDelay);
-    l_black = 1 ? leftIRblack() > 700 : 0;
-    r_black = 1 ? rightIRblack() >  700 : 0;
-    continue;
-    // goStraight(1000);
-    if (l_black == 0 && r_black == 1) {
+  ultrasonic();
+  if (distance > 10) {
+    if (l_black == 0 && r_black == 0) {
+      goStraight(25);
+    } else if (l_black == 0 && r_black == 1) {
       rotateRight(25);
     } else if (l_black == 1 && r_black == 0) {
       rotateLeft(25);
     } else {
       rotateRight(25);
     }
-    return;
-  }
-  // First rotate 
-  if (lr == 0) {
-    rotateLeft(200);
-  // lr == 1
   } else {
-    rotateRight(200);
+    int lr = random(0, 2);
+    // First rotate 
+    if (lr == 0) {
+      rotateLeft(250);
+    // lr == 1
+    } else {
+      rotateRight(250);
+    }
   }
 }
 
 // TODO create exponential decay optimization
 void loop() {
-  randomWalk(100);
+  randomWalk();
   delay(35);
 }
