@@ -16,6 +16,8 @@ int analogR = A0;
 int digitalL = 9;
 int analogL = A1;
 
+double distance;
+
 void setup() {
   // Left wheel
   pinMode(motor1pin1, OUTPUT);
@@ -79,7 +81,7 @@ void ultrasonic() {
   // If there is no object or reflected pulse, the Echo
   // pin will time-out after 38ms and get back to low state.
 
-  double distance, duration;
+  double duration;
 
   // Reset the pin before we begin
   digitalWrite(trigPin, LOW);  // Added this line
@@ -118,12 +120,20 @@ void rightIR() {
   Serial.println(isBlack);
 }
 
+void mazeCode(){
+  if (distance < 10){
+    rotateRight(200);
+  }
+}
+
 void loop() {
   // rotateRight(50);
   delay(1000);
   // rotateLeft(50);
   // delay(1000);
-  // ultrasonic();
-  leftIR();
-  rightIR();
+  ultrasonic();
+  mazeCode();
+  //leftIR();
+  //rightIR();
 }
+
