@@ -133,8 +133,7 @@ int leftIRblack() {
   return analogRead(analogL);
 }
 
-void loop() {
-
+void lineFollow() {
   l_black = 1 ? leftIRblack() > 700 : 0;
   r_black = 1 ? rightIRblack() >  700 : 0;
   // goStraight(1000);
@@ -148,23 +147,17 @@ void loop() {
   } else {
     rotateRight(25);
   }
-  // } else if () {
-  //   rotateRight(50);
-  // } else if () {
-  //   rotateRight(50);
-  // } else if () {
-  //   rotateRight(50);
-  // }
-  // rotateRight(50);
-  // delay(1000);
-  // rotateLeft(50);
-  // delay(1000);
-  // ultrasonic();
+
   Serial.print("Left: ,");
   Serial.print(l_black);
   Serial.print(" | ");
   Serial.print("Right: ");
   Serial.print(r_black);
   Serial.println();
+
+}
+
+void loop() {
+  lineFollow();
   delay(35);
 }
