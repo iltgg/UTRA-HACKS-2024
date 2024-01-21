@@ -136,19 +136,14 @@ int leftIRblack() {
 }
 
 void randomWalk(int time) {
-  int lr = random(0, 1);
+  // Default state: moving forward
+  
+  int lr = random(0, 2);
   int smallDelay = 5;
-  // First rotate 
-  if (lr == 0) {
-    rotateLeft(200);
-  // lr == 1
-  } else {
-    rotateRight(200);
-  }
   for (int i = 0; i < time; i+=smallDelay) {
     ultrasonic();
-    if (distance < 30) {
-      return;
+    if (distance < 20) {
+      break;
     }
     goStraight(smallDelay);
     l_black = 1 ? leftIRblack() > 700 : 0;
@@ -164,10 +159,17 @@ void randomWalk(int time) {
     }
     return;
   }
+  // First rotate 
+  if (lr == 0) {
+    rotateLeft(200);
+  // lr == 1
+  } else {
+    rotateRight(200);
+  }
 }
 
 // TODO create exponential decay optimization
 void loop() {
-  randomWalk(25);
+  randomWalk(100);
   delay(35);
 }
