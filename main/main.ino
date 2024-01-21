@@ -46,6 +46,9 @@ void setup() {
 }
 
 void goStraight(int time) {
+ena_max = 255;
+enb_max = 210;
+
   // Turn on turning
   analogWrite(en1, ena_max);
   analogWrite(en2, enb_max);
@@ -63,6 +66,9 @@ void goStraight(int time) {
 }
 
 void rotateRight(int deg) {
+ena_max = 255;
+enb_max = 160;
+
   // Turn on turning
   analogWrite(en1, ena_max);
   analogWrite(en2, enb_max);
@@ -80,6 +86,9 @@ void rotateRight(int deg) {
 }
 
 void rotateLeft(int deg) {
+ena_max = 255;
+enb_max = 210;
+
   // Turn on turning
   analogWrite(en1, ena_max);
   analogWrite(en2, enb_max);
@@ -96,6 +105,7 @@ void rotateLeft(int deg) {
   digitalWrite(en2, LOW);
 }
 
+
 void ultrasonic() {
   // If there is no object or reflected pulse, the Echo
   // pin will time-out after 38ms and get back to low state.
@@ -104,27 +114,47 @@ void ultrasonic() {
 
   // Reset the pin before we begin
   digitalWrite(trigPin, LOW);  // Added this line
-  delayMicroseconds(1); // Added this line
-  
+  delayMicroseconds(1);        // Added this line
+
   // In order to generate the ultrasound we need to set
   // the Trig pin on a High State for 10 µs.
   digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10); // Added this line
-  // Then echo pin gets turned on until it receives 
+  delayMicroseconds(10);  // Added this line
+  // Then echo pin gets turned on until it receives
   digitalWrite(trigPin, LOW);
 
   // Read duration of the echo pin
   // Confirm this calculation later
   duration = pulseIn(echoPin, HIGH);
-  distance = (duration/2) / 29.1;
+  distance = (duration / 2) / 29.1;
 
-  //if (distance >= 500 || distance <= 0){
+  // if (distance >= 1500 || distance <= 0) {
   //  Serial.println("Out of range");
-  //}
+  // }
   //else {
-    Serial.print(distance);
-    Serial.println(" cm");
+  // Serial.print(distance);
+  // Serial.println(" cm");
   //}
+}
+
+void ultrasonicPlus() {
+ultrasonic:
+  double duration;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(1);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration / 2) / 29.1;
+
+  if (distance >= 1500 || distance <= 0) {
+    delay(10);
+    goto ultrasonic;
+  }
 }
 
 void leftIR() {
@@ -139,37 +169,77 @@ void rightIR() {
   Serial.println(isBlack);
 }
 
-void mazeCode(){
+void mazeCode() {
   rotateRight(300);
   delay(1000);
-  ultrasonic();
-  if (distance < 10){
+  ultrasonicPlus();
+  if (distance < 30) {
     rotateLeft(300);
     delay(1000);
-    ultrasonic();
-    if(distance < 10){
+    ultrasonicPlus();
+    if (distance < 30) {
       rotateLeft(300);
-      ultrasonic();
-      if(distance < 10)
-      {
+      ultrasonicPlus();
+      if (distance < 30) {
         rotateLeft(300);
       }
+    } else {
+      goStraight(500);
     }
-    else{
-      goStraight(100);
-    }
+  } else {
+    goStraight(500);
   }
-  else{
-    goStraight(100);
+}
+
+#define dly delay(1000)
+float forward;
+float right;
+float left;
+void mazeCodePlus() {
+  forward = 0;
+  right = 0;
+  left = 0;
+
+  ultrasonicPlus();
+  forward = distance;
+
+  rotateRight(300);
+  dly;
+  ultrasonicPlus();
+  right = distance;
+
+  if (forward > 30) {
+    rotateLeft(300);
+  dly;
+    goStraight(500);
+    return;
   }
+  if (right > 30) {
+    goStraight(500);
+    return;
+  }
+
+  rotateLeft(300);
+  dly;
+  rotateLeft(300);
+  dly;
+
+  ultrasonicPlus();
+  left = distance;
+  if (left > 30) {
+    goStraight(500);
+    return;
+  }
+  rotateLeft(300);
+  dly;
+  goStraight(500);
 }
 
 void loop() {
-  //delay(1000);
-  //mazeCode();
-  delay(5000);
-  rotateLeft(300);
-  delay(5000);
-  rotateRight(300);
+  delay(2000);
+  mazeCodePlus();
+  // delay(5000);
+  // rotateRight(300);
+  // delay(5000);
+  // rotateLeft(250);
 }
-
