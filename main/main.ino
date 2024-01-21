@@ -16,8 +16,26 @@ int analogR = A0;
 // int digitalL = 9;
 int analogL = A1;
 
+<<<<<<< HEAD:main/main.ino
+// LED
+int led_red = 10;
+int led_green = 11;
+
+//Button
+int button = 1;
+int buttonState = 0;
+
+double distance;
+
+int ena_max = 255;
+int enb_max = 210;
+
+int state = 0;
+bool wait = false;
+=======
 int l_black = 0;
 int r_black = 0;
+>>>>>>> main:line_follow.ino
 
 void setup() {
   // Left wheel
@@ -40,10 +58,17 @@ void setup() {
   // pinMode(digitalL, INPUT);
   pinMode(analogL, INPUT);
 
+  pinMode(led_red, OUTPUT);
+  pinMode(led_green, OUTPUT);
+
+  pinMode(button, INPUT);
+
   Serial.begin(9600);
 }
 
 void goStraight(int time) {
+<<<<<<< HEAD:main/main.ino
+=======
   // Turn on turning
   digitalWrite(en1, HIGH);
   digitalWrite(en2, HIGH);
@@ -61,17 +86,18 @@ void goStraight(int time) {
 }
 
 void rotateLeft(int deg) {
+>>>>>>> main:line_follow.ino
   // Turn on turning
-  digitalWrite(en1, HIGH);
-  digitalWrite(en2, HIGH);
+  analogWrite(en1, ena_max);
+  analogWrite(en2, enb_max);
+
   // CW right wheel
-  digitalWrite(motor1pin1, LOW);
-  digitalWrite(motor1pin2, HIGH);
+  digitalWrite(motor1pin1, HIGH);
+  digitalWrite(motor1pin2, LOW);
   // CCW left wheel
   digitalWrite(motor2pin1, HIGH);
   digitalWrite(motor2pin2, LOW);
-  // By a certain number of degrees
-  delay(deg);
+  delay(time);
   // Turn off turning
   digitalWrite(en1, LOW);
   digitalWrite(en2, LOW);
@@ -79,8 +105,8 @@ void rotateLeft(int deg) {
 
 void rotateRight(int deg) {
   // Turn on turning
-  digitalWrite(en1, HIGH);
-  digitalWrite(en2, HIGH);
+  analogWrite(en1, ena_max);
+  analogWrite(en2, enb_max);
   // CW right wheel
   digitalWrite(motor1pin1, HIGH);
   digitalWrite(motor1pin2, LOW);
@@ -94,11 +120,28 @@ void rotateRight(int deg) {
   digitalWrite(en2, LOW);
 }
 
+void rotateLeft(int deg) {
+  // Turn on turning
+  analogWrite(en1, ena_max);
+  analogWrite(en2, enb_max);
+  // CW right wheel
+  digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, HIGH);
+  // CCW left wheel
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
+  // By a certain number of degrees
+  delay(deg);
+  // Turn off turning
+  digitalWrite(en1, LOW);
+  digitalWrite(en2, LOW);
+}
+
 void ultrasonic() {
   // If there is no object or reflected pulse, the Echo
   // pin will time-out after 38ms and get back to low state.
 
-  double distance, duration;
+  double duration;
 
   // Reset the pin before we begin
   digitalWrite(trigPin, LOW);  // Added this line
@@ -116,13 +159,13 @@ void ultrasonic() {
   duration = pulseIn(echoPin, HIGH);
   distance = (duration/2) / 29.1;
 
-  if (distance >= 500 || distance <= 0){
-    Serial.println("Out of range");
-  }
-  else {
+  //if (distance >= 500 || distance <= 0){
+  //  Serial.println("Out of range");
+  //}
+  //else {
     Serial.print(distance);
     Serial.println(" cm");
-  }
+  //}
 }
 
 int rightIRblack() {
@@ -157,7 +200,80 @@ void lineFollow() {
 
 }
 
+<<<<<<< HEAD:main/main.ino
+void mazeCode(){
+  rotateRight(300);
+  delay(1000);
+  ultrasonic();
+  if (distance < 10){
+    rotateLeft(300);
+    delay(1000);
+    ultrasonic();
+    if(distance < 10){
+      rotateLeft(300);
+      ultrasonic();
+      if(distance < 10)
+      {
+        rotateLeft(300);
+      }
+    }
+    else{
+      goStraight(100);
+    }
+  }
+  else{
+    goStraight(100);
+  }
+=======
 void loop() {
   lineFollow();
   delay(35);
+>>>>>>> main:line_follow.ino
 }
+
+void LedSelection(){
+  if(state == 0)
+  {
+    digitalWrite(led_red, LOW);
+    digitalWrite(led_green, LOW);
+  }
+  else if(state == 1)
+  {
+    digitalWrite(led_red, HIGH);
+    digitalWrite(led_green, LOW);
+  }
+  else if(state == 2)
+  {
+    digitalWrite(led_red, LOW);
+    digitalWrite(led_green, HIGH);
+  }
+}
+
+void StateSelection()
+{
+  buttonState = digitalRead(button);
+  if (wait == false)
+  {
+    if (buttonState == HIGH) {
+      wait = true;
+      state++;
+      Serial.print("State Change:" + state);
+      if (state > 2)
+      {
+        state = 0;
+      }
+    } 
+  }
+  if (buttonState == LOW){
+      wait = false;
+  }
+}
+
+void loop() {
+  //delay(1000);
+  //mazeCode();
+  Serial.println(state);
+  StateSelection();
+  LedSelection();
+}
+
