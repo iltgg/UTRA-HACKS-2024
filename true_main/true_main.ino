@@ -1,3 +1,4 @@
+int PC = 0;
 // MOTOR
 int en1 = 6;
 int motor1pin1 = 2;
@@ -36,6 +37,7 @@ int l_black = 0;
 int r_black = 0;
 
 void setup() {
+  Serial.begin(9600);
   // Left wheel
   pinMode(motor1pin1, OUTPUT);
   pinMode(motor1pin2, OUTPUT);
@@ -124,12 +126,12 @@ void ultrasonic() {
   // Reset the pin before we begin
   digitalWrite(trigPin, LOW);  // Added this line
   delayMicroseconds(1); // Added this line
-  
+
   // In order to generate the ultrasound we need to set
   // the Trig pin on a High State for 10 µs.
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10); // Added this line
-  // Then echo pin gets turned on until it receives 
+  // Then echo pin gets turned on until it receives
   digitalWrite(trigPin, LOW);
 
   // Read duration of the echo pin
@@ -265,26 +267,29 @@ void lineFollow() {
 }
 
 void randomWalk() {
+  // First interaction: with the box, then turn left
+  // Going to see the ling
+  // Second box: turn 45 degrees align itself
+  l_black = 1 ? leftIRblack() > 700 : 0;
+  r_black = 1 ? rightIRblack() >  700 : 0;
   // Default state: moving forward
   ultrasonicPlus();
-  if (distance > 10) {
-    if (l_black == 0 && r_black == 0) {
-      goStraight(25);
-    } else if (l_black == 0 && r_black == 1) {
-      rotateRight(25);
-    } else if (l_black == 1 && r_black == 0) {
-      rotateLeft(25);
-    } else {
-      rotateRight(25);
-    }
+  if (l_black == 0 && r_black == 0) {
+    goStraight(25);
+  } else if (l_black == 0 && r_black == 1) {
+    rotateRight(25);
+  } else if (l_black == 1 && r_black == 0) {
+    rotateLeft(25);
   } else {
-    int lr = random(0, 2);
-    // First rotate 
-    if (lr == 0) {
-      rotateLeft(250);
-    // lr == 1
-    } else {
-      rotateRight(250);
+    rotateRight(100);
+  }
+  if (distance < 20) {
+    if (PC == 0) {
+      rotateLeft(200);
+      PC++;
+    } else if (PC == 1) {
+      rotateRight(200);
+      PC++;
     }
   }
 }
@@ -310,7 +315,7 @@ void LedSelection(){
 void StateSelection()
 {
   buttonState = digitalRead(button);
-  
+
   if (buttonState == HIGH) {
     if (wait == false)
     {
@@ -320,7 +325,7 @@ void StateSelection()
       {
         state = 0;
       }
-    } 
+    }
   }
   else {
       wait = false;
@@ -328,23 +333,30 @@ void StateSelection()
 }
 
 void loop() {
-  StateSelection();
-  LedSelection();
-  // Serial.println(state);
-  if(state == 0)
-  {
-    delay(35);
-    lineFollow();
-  }
-  else if(state == 1)
-  {
-    delay(35);
-    randomWalk();
-  }
-  else if(state == 2)
-  {
-    delay(100);
-    mazeCodePlus();
-  }
+  // StateSelection();
+  // LedSelection();
+  // if(state == 0)
+  // {
+  //   delay(35);
+  //   lineFollow();
+  // }
+  // else if(state == 1)
+  // {
+  //   delay(35);
+  //   randomWalk();
+  // }
+  // else if(state == 2)
+  // {
+  //   delay(100);
+  //   mazeCodePlus();
+  // }
+  r_black = rightIRblack();
+  l_black = leftIRblack();
+  Serial.print("L: ");
+  Serial.print(l_black);
+  Serial.print("| R: ");
+  Serial.print(r_black);
+  Serial.println();
+  delay(100);
 }
 
