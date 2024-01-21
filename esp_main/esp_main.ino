@@ -36,6 +36,8 @@ void setup() {
   json = "";
   resetData();
   setID();
+  addData((short)0);
+  flushData();
 }
 
 // int stop = 0;
