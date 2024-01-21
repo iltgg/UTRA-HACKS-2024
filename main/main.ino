@@ -137,28 +137,35 @@ void rightIR() {
 }
 
 void mazeCode(){
-  rotateRight(25);
+  rotateRight(100);
+  delay(1000);
   ultrasonic();
   if (distance < 10){
-    rotateLeft(25);
+    rotateLeft(100);
+    delay(1000);
     ultrasonic();
     if(distance < 10){
       rotateLeft(220);
-      goStraight(30);
+      goStraight(100);
     }
     else{
-      goStraight(30);
+      goStraight(100);
     }
   }
+  else if(distance >= 500 || distance <= 0){
+    goStraight(100);
+  }
   else{
-    rotateLeft(25);
-    goStraight(30);
+    rotateLeft(100);
+    delay(1000);
+    goStraight(100);
+    delay(1000);
     rotateRight(220);
   }
 }
 
 void loop() {
-  delay(100);
+  delay(1000);
   mazeCode();
 }
 
