@@ -148,7 +148,7 @@ void randomWalk(int time) {
   for (int i = 0; i < time; i+=smallDelay) {
     ultrasonic();
     if (distance < 30) {
-      continue
+      return;
     }
     goStraight(smallDelay);
     l_black = 1 ? leftIRblack() > 700 : 0;
