@@ -11,10 +11,13 @@ int echoPin = 12;
 int trigPin = 13;
 
 // IR SENSORS
-int digitalR = 8;
+// int digitalR = 8;
 int analogR = A0;
-int digitalL = 9;
+// int digitalL = 9;
 int analogL = A1;
+
+int l_black = 0;
+int r_black = 0;
 
 void setup() {
   // Left wheel
@@ -32,16 +35,32 @@ void setup() {
   pinMode(echoPin, INPUT);
 
   // IR sensor pins
-  pinMode(digitalR, INPUT);
+  // pinMode(digitalR, INPUT);
   pinMode(analogR, INPUT);
-  pinMode(digitalL, INPUT);
+  // pinMode(digitalL, INPUT);
   pinMode(analogL, INPUT);
 
   Serial.begin(9600);
 }
 
+void goStraight(int time) {
+  // Turn on turning
+  digitalWrite(en1, HIGH);
+  digitalWrite(en2, HIGH);
 
-void rotateRight(int deg) {
+  // CW right wheel
+  digitalWrite(motor1pin1, HIGH);
+  digitalWrite(motor1pin2, LOW);
+  // CCW left wheel
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
+  delay(time);
+  // Turn off turning
+  digitalWrite(en1, LOW);
+  digitalWrite(en2, LOW);
+}
+
+void rotateLeft(int deg) {
   // Turn on turning
   digitalWrite(en1, HIGH);
   digitalWrite(en2, HIGH);
@@ -58,7 +77,7 @@ void rotateRight(int deg) {
   digitalWrite(en2, LOW);
 }
 
-void rotateLeft(int deg) {
+void rotateRight(int deg) {
   // Turn on turning
   digitalWrite(en1, HIGH);
   digitalWrite(en2, HIGH);
@@ -106,24 +125,46 @@ void ultrasonic() {
   }
 }
 
-void leftIR() {
-  int isBlack = digitalRead(digitalL);
-  Serial.print("Left: ");
-  Serial.println(isBlack);
+int rightIRblack() {
+  return analogRead(analogR);
 }
 
-void rightIR() {
-  int isBlack = digitalRead(digitalR);
-  Serial.print("Right: ");
-  Serial.println(isBlack);
+int leftIRblack() {
+  return analogRead(analogL);
 }
 
 void loop() {
+
+  l_black = 1 ? leftIRblack() > 700 : 0;
+  r_black = 1 ? rightIRblack() >  700 : 0;
+  // goStraight(1000);
+  if (l_black == 0 && r_black == 0) {
+    // go straight
+    goStraight(25);
+  }  else if (l_black == 0 && r_black == 1) {
+    rotateRight(25);
+  } else if (l_black == 1 && r_black == 0) {
+    rotateLeft(25);
+  } else {
+    rotateRight(25);
+  }
+  // } else if () {
+  //   rotateRight(50);
+  // } else if () {
+  //   rotateRight(50);
+  // } else if () {
+  //   rotateRight(50);
+  // }
   // rotateRight(50);
-  delay(1000);
+  // delay(1000);
   // rotateLeft(50);
   // delay(1000);
   // ultrasonic();
-  leftIR();
-  rightIR();
+  Serial.print("Left: ,");
+  Serial.print(l_black);
+  Serial.print(" | ");
+  Serial.print("Right: ");
+  Serial.print(r_black);
+  Serial.println();
+  delay(35);
 }
