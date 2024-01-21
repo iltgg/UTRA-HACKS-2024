@@ -21,7 +21,7 @@ int led_red = 10;
 int led_green = 11;
 
 //Button
-int button = 1;
+int button = 19;
 int buttonState = 0;
 
 double distance;
@@ -61,7 +61,7 @@ void setup() {
 
   pinMode(button, INPUT);
 
-  Serial.begin(9600);
+  // Serial.begin(9600);
 }
 
 void goStraight(int time) {
@@ -310,28 +310,41 @@ void LedSelection(){
 void StateSelection()
 {
   buttonState = digitalRead(button);
-  if (wait == false)
-  {
-    if (buttonState == HIGH) {
+  
+  if (buttonState == HIGH) {
+    if (wait == false)
+    {
       wait = true;
       state++;
-      Serial.print("State Change:" + state);
       if (state > 2)
       {
         state = 0;
       }
     } 
   }
-  if (buttonState == LOW){
+  else {
       wait = false;
   }
 }
 
 void loop() {
-  //delay(1000);
-  //mazeCode();
-  Serial.println(state);
   StateSelection();
   LedSelection();
+  // Serial.println(state);
+  if(state == 0)
+  {
+    delay(35);
+    lineFollow();
+  }
+  else if(state == 1)
+  {
+    delay(35);
+    randomWalk();
+  }
+  else if(state == 2)
+  {
+    delay(100);
+    mazeCodePlus();
+  }
 }
 
