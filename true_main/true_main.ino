@@ -15,7 +15,7 @@ int trigPin = 13;
 //int digitalR = 8;
 int analogR = A0;
 //int digitalL = 9;
-int analogL = A1;
+int analogL = A2;
 
 // LED
 int led_red = 10;
@@ -30,14 +30,14 @@ double distance;
 int ena_max = 255;
 int enb_max = 210;
 
-int state = 0;
+const int state = 1;
 bool wait = false;
 
 int l_black = 0;
 int r_black = 0;
 
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   // Left wheel
   pinMode(motor1pin1, OUTPUT);
   pinMode(motor1pin2, OUTPUT);
@@ -63,7 +63,7 @@ void setup() {
 
   pinMode(button, INPUT);
 
-  // Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void goStraight(int time) {
@@ -243,18 +243,18 @@ void mazeCodePlus() {
 }
 
 void lineFollow() {
-  l_black = 1 ? leftIRblack() > 700 : 0;
-  r_black = 1 ? rightIRblack() >  700 : 0;
+  l_black = 1 ? leftIRblack() > 50 : 0;
+  r_black = 1 ? rightIRblack() >  50 : 0;
   // goStraight(1000);
   if (l_black == 0 && r_black == 0) {
     // go straight
-    goStraight(25);
+    goStraight(20);
   }  else if (l_black == 0 && r_black == 1) {
-    rotateRight(25);
+    rotateRight(75);
   } else if (l_black == 1 && r_black == 0) {
-    rotateLeft(25);
+    rotateLeft(75);
   } else {
-    rotateRight(25);
+    rotateRight(75);
   }
 
   Serial.print("Left: ,");
@@ -270,11 +270,25 @@ void randomWalk() {
   // First interaction: with the box, then turn left
   // Going to see the ling
   // Second box: turn 45 degrees align itself
-  l_black = 1 ? leftIRblack() > 700 : 0;
-  r_black = 1 ? rightIRblack() >  700 : 0;
+  l_black = 1 ? leftIRblack() > 70 : 0;
+  r_black = 1 ? rightIRblack() >  70 : 0;
+  
   // Default state: moving forward
-  ultrasonicPlus();
-  if (l_black == 0 && r_black == 0) {
+  ultrasonic();
+  if (distance < 40) {
+    if (PC == 0) {
+      rotateLeft(201);
+      delay(1000);
+      goStraight(500);
+      PC++;
+    } else if (PC == 1) {
+      rotateRight(201);
+      delay(1000);
+      goStraight(500);
+      PC++;
+    }
+  }
+  else if (l_black == 0 && r_black == 0) {
     goStraight(25);
   } else if (l_black == 0 && r_black == 1) {
     rotateRight(25);
@@ -283,15 +297,7 @@ void randomWalk() {
   } else {
     rotateRight(100);
   }
-  if (distance < 20) {
-    if (PC == 0) {
-      rotateLeft(200);
-      PC++;
-    } else if (PC == 1) {
-      rotateRight(200);
-      PC++;
-    }
-  }
+  
 }
 
 void LedSelection(){
@@ -320,10 +326,10 @@ void StateSelection()
     if (wait == false)
     {
       wait = true;
-      state++;
+      //state++;
       if (state > 2)
       {
-        state = 0;
+        //state = 0;
       }
     }
   }
@@ -335,28 +341,28 @@ void StateSelection()
 void loop() {
   // StateSelection();
   // LedSelection();
-  // if(state == 0)
-  // {
-  //   delay(35);
-  //   lineFollow();
-  // }
-  // else if(state == 1)
-  // {
-  //   delay(35);
-  //   randomWalk();
-  // }
-  // else if(state == 2)
-  // {
-  //   delay(100);
-  //   mazeCodePlus();
-  // }
-  r_black = rightIRblack();
-  l_black = leftIRblack();
-  Serial.print("L: ");
-  Serial.print(l_black);
-  Serial.print("| R: ");
-  Serial.print(r_black);
-  Serial.println();
-  delay(100);
+  if(state == 0)
+  {
+    delay(35);
+    lineFollow();
+  }
+  else if(state == 1)
+  {
+    delay(35);
+    randomWalk();
+  }
+  else if(state == 2)
+  {
+    delay(100);
+    mazeCodePlus();
+  }
+  // r_black = rightIRblack();
+  // l_black = leftIRblack();
+  // Serial.print("L: ");
+  // Serial.print(l_black);
+  // Serial.print("| R: ");
+  // Serial.print(r_black);
+  // Serial.println();
+  // delay(100);
 }
 
