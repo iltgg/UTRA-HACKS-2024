@@ -42,17 +42,33 @@ void setup() {
   Serial.begin(9600);
 }
 
+void goStraight(int time) {
+  // Turn on turning
+  digitalWrite(en1, HIGH);
+  digitalWrite(en2, HIGH);
+
+  // CW right wheel
+  digitalWrite(motor1pin1, HIGH);
+  digitalWrite(motor1pin2, LOW);
+  // CCW left wheel
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
+  delay(time);
+  // Turn off turning
+  digitalWrite(en1, LOW);
+  digitalWrite(en2, LOW);
+}
 
 void rotateRight(int deg) {
   // Turn on turning
   digitalWrite(en1, HIGH);
   digitalWrite(en2, HIGH);
   // CW right wheel
-  digitalWrite(motor1pin1, LOW);
-  digitalWrite(motor1pin2, HIGH);
+  digitalWrite(motor1pin1, HIGH);
+  digitalWrite(motor1pin2, LOW);
   // CCW left wheel
-  digitalWrite(motor2pin1, HIGH);
-  digitalWrite(motor2pin2, LOW);
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, HIGH);
   // By a certain number of degrees
   delay(deg);
   // Turn off turning
@@ -65,11 +81,11 @@ void rotateLeft(int deg) {
   digitalWrite(en1, HIGH);
   digitalWrite(en2, HIGH);
   // CW right wheel
-  digitalWrite(motor1pin1, HIGH);
-  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, HIGH);
   // CCW left wheel
-  digitalWrite(motor2pin1, LOW);
-  digitalWrite(motor2pin2, HIGH);
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
   // By a certain number of degrees
   delay(deg);
   // Turn off turning
@@ -121,19 +137,28 @@ void rightIR() {
 }
 
 void mazeCode(){
+  rotateRight(25);
+  ultrasonic();
   if (distance < 10){
-    rotateRight(200);
+    rotateLeft(25);
+    ultrasonic();
+    if(distance < 10){
+      rotateLeft(220);
+      goStraight(30);
+    }
+    else{
+      goStraight(30);
+    }
+  }
+  else{
+    rotateLeft(25);
+    goStraight(30);
+    rotateRight(220);
   }
 }
 
 void loop() {
-  // rotateRight(50);
-  delay(1000);
-  // rotateLeft(50);
-  // delay(1000);
-  ultrasonic();
+  delay(100);
   mazeCode();
-  //leftIR();
-  //rightIR();
 }
 
