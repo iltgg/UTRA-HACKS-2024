@@ -16,7 +16,7 @@ int analogR = A0;
 int digitalL = 9;
 int analogL = A1;
 
-double distance;
+float distance;
 
 int ena_max = 255;
 int enb_max = 210;
