@@ -127,6 +127,26 @@ void ultrasonic() {
   //}
 }
 
+void ultrasonicPlus() {
+ultrasonic:
+  double duration;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(1);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration / 2) / 29.1;
+
+  if (distance >= 1500 || distance <= 0) {
+    delay(10);
+    goto ultrasonic;
+  }
+}
+
 int rightIRblack() {
   return analogRead(analogR);
 }
@@ -137,7 +157,7 @@ int leftIRblack() {
 
 void randomWalk() {
   // Default state: moving forward
-  ultrasonic();
+  ultrasonicPlus();
   if (distance > 10) {
     if (l_black == 0 && r_black == 0) {
       goStraight(25);
