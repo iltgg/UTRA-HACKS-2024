@@ -18,6 +18,9 @@ int analogL = A1;
 
 double distance;
 
+int ena_max = 255;
+int enb_max = 210;
+
 void setup() {
   // Left wheel
   pinMode(motor1pin1, OUTPUT);
@@ -44,8 +47,8 @@ void setup() {
 
 void goStraight(int time) {
   // Turn on turning
-  digitalWrite(en1, HIGH);
-  digitalWrite(en2, HIGH);
+  analogWrite(en1, ena_max);
+  analogWrite(en2, enb_max);
 
   // CW right wheel
   digitalWrite(motor1pin1, HIGH);
@@ -61,8 +64,8 @@ void goStraight(int time) {
 
 void rotateRight(int deg) {
   // Turn on turning
-  digitalWrite(en1, HIGH);
-  digitalWrite(en2, HIGH);
+  analogWrite(en1, ena_max);
+  analogWrite(en2, enb_max);
   // CW right wheel
   digitalWrite(motor1pin1, HIGH);
   digitalWrite(motor1pin2, LOW);
@@ -78,8 +81,8 @@ void rotateRight(int deg) {
 
 void rotateLeft(int deg) {
   // Turn on turning
-  digitalWrite(en1, HIGH);
-  digitalWrite(en2, HIGH);
+  analogWrite(en1, ena_max);
+  analogWrite(en2, enb_max);
   // CW right wheel
   digitalWrite(motor1pin1, LOW);
   digitalWrite(motor1pin2, HIGH);
@@ -146,26 +149,27 @@ void mazeCode(){
     ultrasonic();
     if(distance < 10){
       rotateLeft(300);
-      goStraight(200);
+      ultrasonic();
+      if(distance < 10)
+      {
+        rotateLeft(300);
+      }
     }
     else{
       goStraight(100);
     }
   }
-  else if(distance >= 500 || distance <= 0){
-    goStraight(100);
-  }
   else{
-    rotateLeft(300);
-    delay(1000);
-    goStraight(500);
-    delay(1000);
-    rotateRight(300);
+    goStraight(100);
   }
 }
 
 void loop() {
-  delay(1000);
-  mazeCode();
+  //delay(1000);
+  //mazeCode();
+  delay(5000);
+  rotateLeft(300);
+  delay(5000);
+  rotateRight(300);
 }
 
